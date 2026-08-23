@@ -32,7 +32,7 @@
     .wrap {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 20px 20px 56px;
+      padding: 16px 20px 72px;
     }
     header {
       display: flex;
@@ -435,37 +435,69 @@
     .landed .list { display: flex; flex-direction: column; gap: 8px; }
     body.mode-landed .landed { display: block; }
     .why {
-      margin-top: 16px;
+      margin: 0 0 28px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.5;
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
     .why strong { color: var(--text); font-weight: 600; }
-    .lede {
-      max-width: 52rem;
-      margin: 0 0 18px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.5;
+    .after {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
     }
-    .lede strong { color: var(--text); font-weight: 600; }
-    .next {
-      margin: 14px 0 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    .explain {
+      max-width: 40rem;
+      margin: 0 0 32px;
     }
-    .next h2, .recent h2, .panel .sidetop h2 {
-      margin: 0 0 8px;
-      font-size: 13px;
+    .explain h2, .next h2, .cta h2, .recent h2 {
+      margin: 0 0 10px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--dim);
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .explain p {
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.4;
+    }
+    .explain ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .explain li b { color: var(--text); font-weight: 600; }
+    .explain .g { color: var(--point); }
+    .explain .a { color: var(--circle); }
+    .explain .r { color: var(--overlap); }
+    .next {
+      margin: 0 0 32px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .cta {
+      margin: 0;
+      padding-top: 8px;
+    }
+    .cta .urlbar { margin-top: 4px; }
+    .panel .sidetop h2, .points h2, .landed h2 {
+      margin: 0 0 8px;
     }
     .next-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      max-width: 640px;
     }
     .next-card {
       display: block;
@@ -597,16 +629,6 @@
       </div>
     </header>
 
-    <p class="lede">Green is a landed point. Amber is still circling. Red is overlap. <strong>Live</strong> follows the talk. <strong>Landed</strong> is the argument after it is processed.</p>
-    <form class="urlbar" id="urlform">
-      <input id="url" type="url" placeholder="Paste a YouTube URL" autocomplete="off" />
-      <button type="submit">Open</button>
-    </form>
-    <p class="status" id="urlstatus">Two stretches are tagged. Other links are saved here. They do not get tags yet.</p>
-    <div class="recent" id="recentwrap" hidden>
-      <h2>Last 10</h2>
-      <ul id="recent"></ul>
-    </div>
     <div class="layout">
       <div>
         <div class="stage">
@@ -624,14 +646,6 @@
             <span id="clock">25:58 / 29:58</span>
           </div>
         </div>
-        <div class="next" id="nextwrap">
-          <h2>Try this next</h2>
-          <div class="next-grid" id="trylist"></div>
-        </div>
-        <p class="why" id="why">
-          <strong>Why this stretch.</strong>
-          Friedberg keeps restating “what does China winning actually mean?” while Sacks tries to answer and Chamath piles onto the definition fight. Highest interrupt density in the episode — not the wordiest passage.
-        </p>
       </div>
 
       <aside class="panel">
@@ -659,6 +673,38 @@
           <div class="feed" id="feed"><p class="empty">Play. Lines collect here as the stretch runs.</p></div>
         </div>
       </aside>
+    </div>
+
+    <div class="after">
+      <p class="why" id="why">
+        <strong>Why this stretch.</strong>
+        Friedberg keeps restating “what does China winning actually mean?” while Sacks tries to answer and Chamath piles onto the definition fight. Highest interrupt density in the episode — not the wordiest passage.
+      </p>
+      <section class="explain">
+        <h2>What this is</h2>
+        <p>The Point marks a talk as it happens. Color sits on the moment.</p>
+        <ul>
+          <li><b class="g">Point</b> — the claim landed. Green.</li>
+          <li><b class="a">Circling</b> — still explaining. Amber.</li>
+          <li><b class="r">Overlap</b> — talking over. Red.</li>
+        </ul>
+      </section>
+      <div class="next" id="nextwrap">
+        <h2>Try a few more</h2>
+        <div class="next-grid" id="trylist"></div>
+      </div>
+      <section class="cta">
+        <h2>Open a video</h2>
+        <form class="urlbar" id="urlform">
+          <input id="url" type="url" placeholder="Paste a YouTube URL" autocomplete="off" />
+          <button type="submit">Open</button>
+        </form>
+        <p class="status" id="urlstatus">Two stretches are tagged. Other links are saved here. They do not get tags yet.</p>
+        <div class="recent" id="recentwrap" hidden>
+          <h2>Last 10</h2>
+          <ul id="recent"></ul>
+        </div>
+      </section>
     </div>
   </div>
   <a class="built" href="https://grok.com" rel="noreferrer">Built with Grok</a>
@@ -958,9 +1004,9 @@
       tagged = false;
       lastId = null;
       lastT = 0;
-      $("why").innerHTML = "<strong>Why this stretch.</strong> This URL is not tagged. Pick a clip below, or keep it in your last 10.";
+      $("why").innerHTML = "<strong>Why this stretch.</strong> This URL is not tagged. Pick a clip under Try a few more, or keep it in your last 10.";
       $("jump").hidden = true;
-      setStatus("Saved. This video is not tagged yet. Only the clips under Try this next have Point / Circling / Overlap.", true);
+      setStatus("Saved. This video is not tagged yet. Only the clips under Try a few more have Point / Circling / Overlap.", true);
       $("url").value = url || "";
       $("landedlist").innerHTML = '<p class="empty">No landed points on this clip.</p>';
       renderTry();
