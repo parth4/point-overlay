@@ -290,7 +290,10 @@
       background: rgba(12, 16, 28, 0.78);
       border: 1px solid rgba(122, 162, 212, 0.35);
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      opacity: 1;
+      transition: opacity 0.9s ease;
     }
+    .mediator.quiet { opacity: 0.28; }
     .mediator[hidden] { display: none; }
     .mediator-who {
       flex-shrink: 0;
@@ -806,6 +809,7 @@
     let player = null;
     let lastId = null;
     let lastT = STRETCH.start;
+    let medHold = { text: "", from: 0, hold: 0, fade: 0 };
 
     function demoById(id) { return DEMOS.find((d) => d.id === id) || null; }
     function demoByVideoId(id) { return DEMOS.find((d) => d.videoId === id) || null; }
@@ -930,12 +934,34 @@
       $("vidcap-label").textContent = (feel.word || names[cue.tag] || cue.tag);
       $("vidcap-text").textContent = cue.summary || (cue.speaker + " · " + cue.text);
       edge.className = "videdge on " + cue.tag;
-      if (cue.mediator) {
-        med.hidden = false;
-        $("medline").textContent = cue.mediator;
-      } else {
-        med.hidden = true;
+      paintMediator(cue);
+    }
+
+    const MED_LOUD = { hit: 8, pin: 5, deny: 5, shift: 5, cut: 4 };
+    function paintMediator(cue) {
+      const med = $("mediator");
+      const t = lastT;
+      const move = cue && cue.move;
+      const loud = !!(cue && cue.mediator && MED_LOUD[move]);
+      const holdFor = loud ? MED_LOUD[move] : 0;
+      const isNew = loud && cue.mediator !== medHold.text;
+      if (isNew && (move === "hit" || t >= medHold.hold || !medHold.text)) {
+        medHold = { text: cue.mediator, from: t, hold: t + holdFor, fade: t + Math.max(2.5, holdFor - 3) };
       }
+      if (!medHold.text || t < medHold.from - 1) {
+        med.hidden = true;
+        med.classList.remove("quiet");
+        return;
+      }
+      if (t > medHold.hold + 4) {
+        med.hidden = true;
+        med.classList.remove("quiet");
+        medHold = { text: "", from: 0, hold: 0, fade: 0 };
+        return;
+      }
+      med.hidden = false;
+      $("medline").textContent = medHold.text;
+      med.classList.toggle("quiet", t >= medHold.fade);
     }
 
     function setMode(next) {
@@ -1145,6 +1171,7 @@
       tagged = true;
       lastId = null;
       lastT = demo.stretch.start;
+      medHold = { text: "", from: 0, hold: 0, fade: 0 };
       $("why").textContent = demo.why;
       $("jump").hidden = false;
       setStatus("This one is marked. Send another if you want more.");
@@ -1173,6 +1200,7 @@
       tagged = false;
       lastId = null;
       lastT = 0;
+      medHold = { text: "", from: 0, hold: 0, fade: 0 };
       $("why").textContent = "Not marked yet. Send the link. We mark Point, Circling, Overlap by hand.";
       $("jump").hidden = true;
       setStatus("Got the link. It is not marked yet. Send it to us and we will mark it by hand.", true);
