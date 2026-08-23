@@ -1,0 +1,251 @@
+{
+  "videoId": "XuoqKYxDHVc",
+  "url": "https://www.youtube.com/watch?v=XuoqKYxDHVc",
+  "title": "The full-length interview with Elon Musk | The Economist",
+  "stretch": {
+    "start": 3743,
+    "end": 4021,
+    "label": "1:02:23–1:07:01"
+  },
+  "why": "Zanny pushes the far-right / civil-war charge; Elon talks over to reframe “normal people,” then they stack “let me” / “don’t cut this” before the civil-war quote. Densest overlap in the interview — not the calmer opening abundance stretch.",
+  "captionSource": "yt-dlp auto-generated English VTT (XuoqKYxDHVc.en.vtt), utterance-grouped; speaker labels inferred from turn-taking and published Economist excerpts.",
+  "counts": {
+    "POINT": 6,
+    "CIRCLING": 8,
+    "OVERLAP": 11,
+    "total": 25
+  },
+  "cues": [
+    {
+      "id": 1,
+      "start": 3743.04,
+      "end": 3752.72,
+      "speaker": "Zanny",
+      "tag": "CIRCLING",
+      "text": "I agree the center of gravity has shifted. The Democratic Party shifted left. But that's not what I'm talking about. I'm talking about people like Rupert Lowe.",
+      "note": "Restates the far-right charge after Elon's Obama/Hillary riff."
+    },
+    {
+      "id": 2,
+      "start": 3752.72,
+      "end": 3773.84,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "Please. It's actually just normal people. Secure borders, safe cities, sensible spending — which of those three are far-right fringe?",
+      "note": "Talks over Zanny mid-name to reframe the parties."
+    },
+    {
+      "id": 3,
+      "start": 3773.84,
+      "end": 3787.0,
+      "speaker": "Elon",
+      "tag": "POINT",
+      "text": "I would like to just admonish you and the media for the absurd characterization of the far right. It is false and misleading and nonsense. Please keep this part in.",
+      "summary": "\"Far-right\" label on normal policies is false",
+      "against": "Zanny stacks “let me” and reads his civil-war quote"
+    },
+    {
+      "id": 4,
+      "start": 3787.0,
+      "end": 3788.68,
+      "speaker": "Zanny",
+      "tag": "OVERLAP",
+      "text": "We'll keep all of this in. But let me—",
+      "note": "Tries to take the floor the instant the point lands."
+    },
+    {
+      "id": 5,
+      "start": 3788.68,
+      "end": 3790.48,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "Don't cut this part.",
+      "note": "Talks over her “let me” to lock the take."
+    },
+    {
+      "id": 6,
+      "start": 3790.48,
+      "end": 3799.4,
+      "speaker": "Zanny",
+      "tag": "OVERLAP",
+      "text": "Let me push back on that. You have close to 250 million followers on X.",
+      "note": "Stacks “let me” while he is still talking."
+    },
+    {
+      "id": 7,
+      "start": 3799.4,
+      "end": 3801.64,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "Yeah, 'cause I'm a popular guy.",
+      "note": "Talks over the setup of the quote."
+    },
+    {
+      "id": 8,
+      "start": 3801.64,
+      "end": 3811.6,
+      "speaker": "Zanny",
+      "tag": "CIRCLING",
+      "text": "Quote: “Civil war in Britain is inevitable. Just a question of when.” When were you last in the UK?",
+      "note": "Uses the quote to set up the residency challenge."
+    },
+    {
+      "id": 9,
+      "start": 3810.08,
+      "end": 3811.6,
+      "speaker": "Elon",
+      "tag": "CIRCLING",
+      "text": "A few years ago.",
+      "note": "Answers the challenge; the claim is not landed yet."
+    },
+    {
+      "id": 10,
+      "start": 3811.6,
+      "end": 3815.48,
+      "speaker": "Zanny",
+      "tag": "POINT",
+      "text": "Exactly. So I live there the whole time. That is nonsense.",
+      "summary": "Civil-war claim collapses if you live in Britain",
+      "against": "Elon: you live in a cloistered existence"
+    },
+    {
+      "id": 11,
+      "start": 3815.48,
+      "end": 3816.68,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "You live in a cloistered existence.",
+      "note": "Talks over her “nonsense” verdict."
+    },
+    {
+      "id": 12,
+      "start": 3816.68,
+      "end": 3821.12,
+      "speaker": "Zanny",
+      "tag": "CIRCLING",
+      "text": "No, I don't, actually. And the numbers also disprove what you say.",
+      "note": "Starts the crime-stats answer."
+    },
+    {
+      "id": 13,
+      "start": 3820.2,
+      "end": 3821.12,
+      "speaker": "Elon",
+      "tag": "CIRCLING",
+      "text": "What numbers?",
+      "note": "Cuts in for the evidence."
+    },
+    {
+      "id": 14,
+      "start": 3821.12,
+      "end": 3844.68,
+      "speaker": "Zanny",
+      "tag": "POINT",
+      "text": "London is a much safer city than any city in the United States. Violent crime is coming down. Because you have so many followers, Americans believe Europe is overrun — rape on every corner, civilizational destruction.",
+      "summary": "UK crime is falling; X picture of collapse is false",
+      "against": "Elon denies the picture, then doubles down on civil war"
+    },
+    {
+      "id": 15,
+      "start": 3844.68,
+      "end": 3845.72,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "I haven't said any of those things.",
+      "note": "Talks over the end of her picture."
+    },
+    {
+      "id": 16,
+      "start": 3845.72,
+      "end": 3848.48,
+      "speaker": "Zanny",
+      "tag": "OVERLAP",
+      "text": "Well, you said civil war in Britain is inevitable.",
+      "note": "Pins him to the quoted line."
+    },
+    {
+      "id": 17,
+      "start": 3848.48,
+      "end": 3887.88,
+      "speaker": "Elon",
+      "tag": "POINT",
+      "text": "Yes, if current trends continue. A large, rapidly growing group whose beliefs are antithetical to Western beliefs — they will try to implement their views, and those who oppose it will oppose it. That's civil war. You live in a cloistered existence. We can go on a tour of Britain.",
+      "summary": "Antithetical-belief growth makes UK civil war inevitable",
+      "against": "Zanny: I live here; you've shaped a false American picture"
+    },
+    {
+      "id": 18,
+      "start": 3887.88,
+      "end": 3896.72,
+      "speaker": "Zanny",
+      "tag": "CIRCLING",
+      "text": "I'd be very happy to tour Britain — the country I live in all the time, and you haven't been in years.",
+      "note": "Turns the tour offer back on his last visit."
+    },
+    {
+      "id": 19,
+      "start": 3896.72,
+      "end": 3900.76,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "I've been there literally a hundred times. Literally a few years ago.",
+      "note": "Talks over the residency jab."
+    },
+    {
+      "id": 20,
+      "start": 3900.76,
+      "end": 3950.16,
+      "speaker": "Zanny",
+      "tag": "POINT",
+      "text": "This exercises me because you've shaped opinion about the UK. Americans I meet think London is dangerous — grooming gangs, violence everywhere. You're posting 48 Hours of Citizen Vigilante. It glorifies vigilante murder of a Muslim immigrant family. Irresponsible to put that on X.",
+      "summary": "Posting the vigilante film is irresponsible",
+      "against": "Elon: it's a movie, and it's worth watching"
+    },
+    {
+      "id": 21,
+      "start": 3950.16,
+      "end": 3954.08,
+      "speaker": "Elon",
+      "tag": "CIRCLING",
+      "text": "I think it's a movie, and it's worth watching.",
+      "note": "Deflects the irresponsible charge without a new claim."
+    },
+    {
+      "id": 22,
+      "start": 3954.08,
+      "end": 3960.0,
+      "speaker": "Zanny",
+      "tag": "OVERLAP",
+      "text": "You're clearly suggesting Europe is a dystopian place—",
+      "note": "Cuts back in on the film defense."
+    },
+    {
+      "id": 23,
+      "start": 3960.0,
+      "end": 3978.64,
+      "speaker": "Elon",
+      "tag": "OVERLAP",
+      "text": "Why aren't you doing more to fight censorship in Europe? People in prison in the UK for social media posts. Do you think that's appropriate?",
+      "note": "Talks over her dystopia charge with a counter-question."
+    },
+    {
+      "id": 24,
+      "start": 3978.64,
+      "end": 3995.04,
+      "speaker": "Zanny",
+      "tag": "POINT",
+      "text": "No — we've written editorials against it. I agree. But you don't have to glorify vigilante violence or paint an inaccurate picture of Europe.",
+      "summary": "Censorship is wrong; the Europe-as-hell picture is still false",
+      "against": "Elon offers a tour and says he is spot on"
+    },
+    {
+      "id": 25,
+      "start": 3996.96,
+      "end": 4021.44,
+      "speaker": "Elon",
+      "tag": "CIRCLING",
+      "text": "We should do a tour of the UK. There are major problems. I think I'm spot on.",
+      "note": "Restates the tour and the original claim; no new landing."
+    }
+  ]
+}

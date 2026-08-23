@@ -1,13 +1,13 @@
 {
   "videoId": "Sij_v-mcZXQ",
   "url": "https://www.youtube.com/watch?v=Sij_v-mcZXQ",
-  "title": "All-In \u2014 Dario Defends Himself, Datacenter Panic, AI Doomer Trap, Senate Toss-Up",
+  "title": "All-In — Dario Defends Himself, Datacenter Panic, AI Doomer Trap, Senate Toss-Up",
   "stretch": {
     "start": 1558,
     "end": 1798,
-    "label": "25:58\u201329:58"
+    "label": "25:58–29:58"
   },
-  "why": "Friedberg keeps restating \u201cwhat does China winning actually mean?\u201d while Sacks tries to answer and Chamath piles on the definition fight. Highest interrupt density in the episode \u2014 not the wordiest stretch.",
+  "why": "Friedberg keeps restating “what does China winning actually mean?” while Sacks tries to answer and Chamath piles on the definition fight. Highest interrupt density in the episode — not the wordiest stretch.",
   "captionSource": "yt-dlp auto-generated English VTT (Sij_v-mcZXQ.en.vtt), utterance-grouped; speaker labels inferred from names, roles, and turn-taking.",
   "counts": {
     "POINT": 2,
@@ -31,7 +31,7 @@
       "end": 1565.2,
       "speaker": "Sacks",
       "tag": "OVERLAP",
-      "text": "Okay, I'll answer your question. I'd like\u2014",
+      "text": "Okay, I'll answer your question. I'd like—",
       "note": "Takes the floor and is talked over before the first sentence lands."
     },
     {
@@ -49,7 +49,7 @@
       "end": 1579.04,
       "speaker": "Sacks",
       "tag": "CIRCLING",
-      "text": "They will\u2014 they will win.",
+      "text": "They will— they will win.",
       "note": "Starts the claim and is cut mid-sentence."
     },
     {
@@ -58,7 +58,7 @@
       "end": 1583.68,
       "speaker": "Friedberg",
       "tag": "OVERLAP",
-      "text": "How does this actually affect\u2014 what does that mean? What does that mean? Help people understand.",
+      "text": "How does this actually affect— what does that mean? What does that mean? Help people understand.",
       "note": "Talks over Sacks and stacks the same undefined question."
     },
     {
@@ -76,7 +76,7 @@
       "end": 1595.92,
       "speaker": "Friedberg",
       "tag": "OVERLAP",
-      "text": "I can't\u2014 I need you to imagine for me. Give me a scenario of what this means.",
+      "text": "I can't— I need you to imagine for me. Give me a scenario of what this means.",
       "note": "Interrupts the counterfactual mid-setup."
     },
     {
@@ -94,8 +94,9 @@
       "end": 1641.44,
       "speaker": "Sacks",
       "tag": "POINT",
-      "text": "There are dual-use military applications \u2014 drones, weapons. America is not going to be the number one country economically and militarily if we lose AI. It's that simple.",
-      "summary": "Lose AI, lose US economic and military lead"
+      "text": "There are dual-use military applications — drones, weapons. America is not going to be the number one country economically and militarily if we lose AI. It's that simple.",
+      "summary": "Lose AI, lose US economic and military lead",
+      "against": "Friedberg still hunts for a definition of “win”; Chamath piles on"
     },
     {
       "id": 10,
@@ -130,7 +131,7 @@
       "end": 1695.0,
       "speaker": "Chamath",
       "tag": "CIRCLING",
-      "text": "Unless we actually go and ban open source \u2014 and I don't even know how you'd implement a ban \u2014 I think it's a worthless exercise. The consumer, American companies, and the economy will win.",
+      "text": "Unless we actually go and ban open source — and I don't even know how you'd implement a ban — I think it's a worthless exercise. The consumer, American companies, and the economy will win.",
       "note": "Starts an answer, then detours into mechanism."
     },
     {
@@ -149,7 +150,8 @@
       "speaker": "Chamath",
       "tag": "POINT",
       "text": "Unless America stops consumers and businesses from using the cheapest, fastest, best thing, we will win. The debate is which private American company wins or loses.",
-      "summary": "No open-source ban, American consumer wins"
+      "summary": "No open-source ban, American consumer wins",
+      "against": "Sacks cuts in: an open-source ban is coming"
     },
     {
       "id": 16,
