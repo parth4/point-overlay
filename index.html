@@ -259,6 +259,83 @@
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
     .why strong { color: var(--text); font-weight: 600; }
+    .lede {
+      max-width: 52rem;
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .lede strong { color: var(--text); font-weight: 600; }
+    .urlbar {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .urlbar input {
+      flex: 1;
+      min-width: 0;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font: 14px/1.3 ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .urlbar input:focus { outline: none; border-color: var(--accent); }
+    .urlbar button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font: 13px/1 ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .urlbar button:hover { border-color: var(--accent); }
+    .status {
+      margin: 0 0 8px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .status.warn { color: var(--circle); }
+    .recent {
+      margin: 0 0 18px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .recent h2 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .recent ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+    .recent button {
+      background: var(--panel);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font: 12px/1.2 ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .recent button:hover, .recent button.on { color: var(--text); border-color: var(--accent); }
+    .built {
+      position: fixed;
+      right: 16px;
+      bottom: 14px;
+      z-index: 5;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--dim);
+      text-decoration: none;
+    }
+    .built:hover { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -269,7 +346,7 @@
           <span class="bindi" aria-hidden="true"></span>
           <h1>Point</h1>
         </div>
-        <p>Paste this link. The All-In stretch plays with the overlay.</p>
+        <p>When someone made the point. When they are still circling. When they talk over.</p>
       </div>
       <div class="legend" aria-label="Tag legend">
         <span class="pill point"><i></i> Point</span>
@@ -278,6 +355,16 @@
       </div>
     </header>
 
+    <p class="lede">Green is a landed point. Amber is still circling. Red is overlap. This demo is four minutes of the All-In podcast. Press play. The panel follows the talk.</p>
+    <form class="urlbar" id="urlform">
+      <input id="url" type="url" placeholder="Paste a YouTube URL" autocomplete="off" />
+      <button type="submit">Open</button>
+    </form>
+    <p class="status" id="urlstatus">Only this All-In stretch is tagged so far. Other links are saved here. They do not get tags yet.</p>
+    <div class="recent" id="recentwrap" hidden>
+      <h2>Last 10</h2>
+      <ul id="recent"></ul>
+    </div>
     <div class="layout">
       <div>
         <div class="stage">
@@ -313,9 +400,12 @@
       </aside>
     </div>
   </div>
+  <a class="built" href="https://grok.com" rel="noreferrer">Built with Grok</a>
 
   <script>
+    const TAGGED_ID = "Sij_v-mcZXQ";
     const STRETCH = { start: 1558, end: 1798 };
+    const RECENT_KEY = "point-recent-v1";
     const CUES = [
       {id:1,start:1559.04,end:1562.08,speaker:"Friedberg",tag:"OVERLAP",text:"Sax, let me ask you my question. I need to hear someone answer this question.",note:"Cuts in after Chamath to force the unanswered China-win question."},
       {id:2,start:1562.08,end:1565.20,speaker:"Sacks",tag:"OVERLAP",text:"Okay, I'll answer your question. I'd like—",note:"Takes the floor and is talked over before the first sentence lands."},
@@ -429,6 +519,91 @@
     }
 
     $("jump").addEventListener("click", seekStretch);
+
+    function videoIdFromUrl(raw) {
+      try {
+        const u = new URL(raw.trim());
+        if (u.hostname.includes("youtu.be")) return u.pathname.replace("/", "").slice(0, 11);
+        if (u.searchParams.get("v")) return u.searchParams.get("v");
+        const m = u.pathname.match(/\/(embed|shorts)\/([A-Za-z0-9_-]{11})/);
+        return m ? m[2] : null;
+      } catch (e) { return null; }
+    }
+
+    function loadRecent() {
+      try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) { return []; }
+    }
+    function saveRecent(url) {
+      const id = videoIdFromUrl(url);
+      if (!id) return loadRecent();
+      const next = [{ url: url.trim(), id, at: Date.now() }].concat(loadRecent().filter((x) => x.id !== id)).slice(0, 10);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      return next;
+    }
+    function renderRecent(list) {
+      const wrap = $("recentwrap");
+      const ul = $("recent");
+      if (!list.length) { wrap.hidden = true; return; }
+      wrap.hidden = false;
+      ul.innerHTML = list.map((x) => {
+        const on = x.id === currentVideoId ? " on" : "";
+        const label = x.id === TAGGED_ID ? "All-In stretch" : x.id;
+        return '<li><button type="button" class="' + on.trim() + '" data-url="' + x.url.replace(/"/g, "&quot;") + '">' + label + "</button></li>";
+      }).join("");
+    }
+
+    let currentVideoId = TAGGED_ID;
+
+    function setStatus(text, warn) {
+      const el = $("urlstatus");
+      el.textContent = text;
+      el.className = "status" + (warn ? " warn" : "");
+    }
+
+    function loadVideo(id, url) {
+      currentVideoId = id;
+      if (player && typeof player.loadVideoById === "function") {
+        if (id === TAGGED_ID) player.loadVideoById({ videoId: id, startSeconds: STRETCH.start });
+        else player.loadVideoById({ videoId: id });
+      }
+      if (id === TAGGED_ID) {
+        setStatus("This stretch is tagged. Green is a point. Amber is circling. Red is overlap.");
+        $("jump").hidden = false;
+        render(STRETCH.start);
+      } else {
+        setStatus("Saved. This video is not tagged yet. Only the All-In stretch has Point / Circling / Overlap.", true);
+        $("jump").hidden = true;
+        lastId = null;
+        $("now").className = "now idle";
+        setTag("Not tagged");
+        $("speaker").textContent = "—";
+        $("quote").textContent = "Paste does not process a new video yet. This one is in your last 10.";
+        $("summary").hidden = true;
+        $("note").hidden = true;
+        $("landed").innerHTML = '<li class="empty">No tags for this URL.</li>';
+      }
+      $("url").value = url || "";
+      renderRecent(loadRecent());
+    }
+
+    $("urlform").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const raw = $("url").value.trim();
+      const id = videoIdFromUrl(raw);
+      if (!id) {
+        setStatus("That does not look like a YouTube URL.", true);
+        return;
+      }
+      saveRecent(raw);
+      loadVideo(id, raw);
+    });
+    $("recent").addEventListener("click", function (e) {
+      const b = e.target.closest("button[data-url]");
+      if (!b) return;
+      saveRecent(b.getAttribute("data-url"));
+      loadVideo(videoIdFromUrl(b.getAttribute("data-url")), b.getAttribute("data-url"));
+    });
+    renderRecent(loadRecent());
 
     function tick() { render(currentTime()); }
 
