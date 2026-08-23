@@ -147,34 +147,53 @@
     #player { width: 100%; height: 100%; }
     .cast {
       position: absolute;
-      top: 10px;
-      left: 12px;
-      right: 12px;
+      inset: 0;
       z-index: 3;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
       pointer-events: none;
     }
     .cast[hidden] { display: none; }
     .cast-chip {
-      display: inline-flex;
+      position: absolute;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(8, 10, 14, 0.62);
-      border: 1px solid rgba(255,255,255,0.08);
+      gap: 2px;
+      min-width: 92px;
+      padding: 10px 12px 8px;
+      border-radius: 16px;
+      background: rgba(8, 10, 14, 0.78);
+      border: 1px solid rgba(255,255,255,0.12);
       color: var(--text);
-      font: 12px/1.2 ui-sans-serif, system-ui, -apple-system, sans-serif;
-      opacity: 0.72;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      text-align: center;
+      opacity: 0.82;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.35);
     }
+    .cast-chip.left { left: 12px; top: 18%; }
+    .cast-chip.right { right: 12px; top: 18%; }
+    .cast-chip.mid { left: 50%; top: 10px; transform: translateX(-50%); }
     .cast-chip.on { opacity: 1; }
-    .cast-chip.POINT { border-color: rgba(61, 154, 106, 0.45); }
-    .cast-chip.CIRCLING { border-color: rgba(201, 162, 39, 0.4); }
-    .cast-chip.OVERLAP { border-color: rgba(196, 92, 92, 0.45); }
-    .cast-chip.HELD { border-color: rgba(196, 92, 92, 0.28); opacity: 0.92; }
-    .cast-chip .e { font-size: 14px; line-height: 1; }
+    .cast-chip.hot {
+      border-color: rgba(196, 92, 92, 0.55);
+      box-shadow: 0 0 0 3px rgba(196, 92, 92, 0.18), 0 10px 24px rgba(0,0,0,0.4);
+    }
+    .cast-chip.warm {
+      border-color: rgba(201, 162, 39, 0.5);
+    }
+    .cast-chip.cool {
+      border-color: rgba(61, 154, 106, 0.5);
+    }
+    .cast-chip .e { font-size: 42px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45)); }
+    .cast-chip .who {
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .cast-chip .temp {
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+    }
     .videdge {
       position: absolute;
       left: 0;
@@ -236,6 +255,7 @@
       background: currentColor;
       display: inline-block;
     }
+    #vidcap-face { font-size: 18px; line-height: 1; }
     .vidcap.POINT .vidcap-tag { color: var(--point); }
     .vidcap.POINT .vidcap-tag i {
       width: 11px;
@@ -777,16 +797,25 @@
     }
 
     const FACE = {
-      POINT: { emoji: "💥", word: "landed" },
-      CIRCLING: { emoji: "🤔", word: "still going" },
-      OVERLAP: { emoji: "🗣️", word: "cuts in" },
-      HELD: { emoji: "🫢", word: "held" }
+      POINT: { emoji: "😌", word: "landed", heat: "cool" },
+      CIRCLING: { emoji: "🤔", word: "still going", heat: "warm" },
+      OVERLAP: { emoji: "😤", word: "cuts in", heat: "hot" },
+      HELD: { emoji: "😮", word: "what happened", heat: "hot" },
+      SETTLED: { emoji: "😐", word: "with it", heat: "cool" },
+      IDLE: { emoji: "😶", word: "", heat: "" }
     };
 
     function speakersIn() {
       const seen = [];
       CUES.forEach((c) => { if (seen.indexOf(c.speaker) === -1) seen.push(c.speaker); });
       return seen;
+    }
+
+    function sideFor(i, n) {
+      if (n === 1) return "left";
+      if (i === 0) return "left";
+      if (i === 1) return "right";
+      return "mid";
     }
 
     function lastCueFor(speaker, t) {
@@ -802,9 +831,13 @@
         if (cue.speaker === speaker) return FACE.OVERLAP;
         if (lastCueFor(speaker, t)) return FACE.HELD;
       }
+      if (cue && cue.tag === "POINT") {
+        if (cue.speaker === speaker) return FACE.POINT;
+        if (lastCueFor(speaker, t)) return FACE.SETTLED;
+      }
       const last = lastCueFor(speaker, t);
-      if (!last) return { emoji: "😶", word: "" };
-      return FACE[last.tag] || { emoji: "😶", word: "" };
+      if (!last) return FACE.IDLE;
+      return FACE[last.tag] || FACE.IDLE;
     }
 
     function paintCast(cue) {
@@ -817,14 +850,12 @@
       const t = lastT;
       const names = speakersIn();
       box.hidden = false;
-      box.innerHTML = names.map((name) => {
+      box.innerHTML = names.map((name, i) => {
         const feel = feelFor(name, cue, t);
         const on = cue && cue.speaker === name ? " on" : "";
-        const tag = (cue && cue.tag === "OVERLAP" && name !== cue.speaker && lastCueFor(name, t))
-          ? "HELD"
-          : (lastCueFor(name, t) ? lastCueFor(name, t).tag : "");
-        const klass = "cast-chip " + tag + on;
-        return '<span class="' + klass + '"><span class="e">' + feel.emoji + "</span>" + esc(name) + "</span>";
+        const klass = ["cast-chip", sideFor(i, names.length), feel.heat, on.trim()].filter(Boolean).join(" ");
+        const temp = feel.word ? '<span class="temp">' + esc(feel.word) + "</span>" : "";
+        return '<span class="' + klass + '"><span class="e">' + feel.emoji + '</span><span class="who">' + esc(name) + "</span>" + temp + "</span>";
       }).join("");
     }
 
