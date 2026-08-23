@@ -947,6 +947,7 @@
       const z = {};
       const prev = {};
       let lastCue = null;
+      speakersIn().forEach((name) => { z[name] = feelOf("idle"); });
       CUES.forEach((c) => {
         if (t < c.start) return;
         lastCue = c;
