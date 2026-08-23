@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Point</title>
+  <style>
+    :root {
+      --bg: #0c0e12;
+      --panel: #14181f;
+      --panel-2: #1a1f28;
+      --line: #2a3140;
+      --text: #e6e8ee;
+      --muted: #8b93a4;
+      --dim: #5c6576;
+      --point: #3d9a6a;
+      --point-bg: rgba(61, 154, 106, 0.14);
+      --circle: #c9a227;
+      --circle-bg: rgba(201, 162, 39, 0.14);
+      --overlap: #c45c5c;
+      --overlap-bg: rgba(196, 92, 92, 0.16);
+      --accent: #7aa2d4;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+    }
+    body { min-height: 100vh; }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 22px 48px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 6px;
+    }
+    .bindi {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #b4232c;
+      display: inline-block;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(180, 35, 44, 0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .pill i {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block;
+    }
+    .pill.point i { background: var(--point); }
+    .pill.circling i { background: var(--circle); }
+    .pill.overlap i { background: var(--overlap); }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+    }
+    .stage {
+      background: #000;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .player-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    #player { width: 100%; height: 100%; }
+    .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--panel);
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .hud button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .hud button:hover { border-color: var(--accent); }
+    .bar {
+      flex: 1;
+      height: 4px;
+      background: #2a3140;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .now {
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .now.POINT { background: linear-gradient(180deg, var(--point-bg), transparent 90%); }
+    .now.CIRCLING { background: linear-gradient(180deg, var(--circle-bg), transparent 90%); }
+    .now.OVERLAP { background: linear-gradient(180deg, var(--overlap-bg), transparent 90%); }
+    .now.idle { background: transparent; }
+    .tagrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .tag {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tag .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+    }
+    .now.POINT .tag { color: var(--point); }
+    .now.POINT .tag .dot {
+      width: 11px;
+      height: 11px;
+      box-shadow: 0 0 0 3px rgba(61, 154, 106, 0.22);
+    }
+    .now.CIRCLING .tag { color: var(--circle); }
+    .now.OVERLAP .tag { color: var(--overlap); }
+    .now.idle .tag { color: var(--dim); }
+    .speaker {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .quote {
+      margin: 10px 0 0;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .summary {
+      margin: 10px 0 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      color: var(--point);
+    }
+    .note {
+      margin: 8px 0 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .points {
+      padding: 14px 16px 16px;
+      flex: 1;
+    }
+    .points h2 {
+      margin: 0 0 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .points ol {
+      margin: 0;
+      padding: 0 0 0 18px;
+    }
+    .points li {
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    .points li span {
+      display: block;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .empty { color: var(--dim); font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 13px; }
+    .why {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .why strong { color: var(--text); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="brand">
+          <span class="bindi" aria-hidden="true"></span>
+          <h1>Point</h1>
+        </div>
+        <p>Paste this link. The All-In stretch plays with the overlay.</p>
+      </div>
+      <div class="legend" aria-label="Tag legend">
+        <span class="pill point"><i></i> Point</span>
+        <span class="pill circling"><i></i> Circling</span>
+        <span class="pill overlap"><i></i> Overlap</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div>
+        <div class="stage">
+          <div class="player-wrap">
+            <div id="player"></div>
+          </div>
+          <div class="hud">
+            <button type="button" id="jump">Jump to stretch</button>
+            <div class="bar" aria-hidden="true"><span id="fill"></span></div>
+            <span id="clock">25:58 / 29:58</span>
+          </div>
+        </div>
+        <p class="why">
+          <strong>Why this stretch.</strong>
+          Friedberg keeps restating “what does China winning actually mean?” while Sacks tries to answer and Chamath piles onto the definition fight. Highest interrupt density in the episode — not the wordiest passage.
+        </p>
+      </div>
+
+      <aside class="panel">
+        <div class="now idle" id="now">
+          <div class="tagrow">
+            <div class="tag" id="tag"><span class="dot" aria-hidden="true"></span><span id="taglabel">Waiting</span></div>
+            <div class="speaker" id="speaker">—</div>
+          </div>
+          <p class="quote" id="quote">Play the stretch. Tags follow the audio.</p>
+          <p class="summary" id="summary" hidden></p>
+          <p class="note" id="note" hidden></p>
+        </div>
+        <div class="points">
+          <h2>Points landed in this stretch</h2>
+          <ol id="landed"><li class="empty">None yet.</li></ol>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const STRETCH = { start: 1558, end: 1798 };
+    const CUES = [
+      {id:1,start:1559.04,end:1562.08,speaker:"Friedberg",tag:"OVERLAP",text:"Sax, let me ask you my question. I need to hear someone answer this question.",note:"Cuts in after Chamath to force the unanswered China-win question."},
+      {id:2,start:1562.08,end:1565.20,speaker:"Sacks",tag:"OVERLAP",text:"Okay, I'll answer your question. I'd like—",note:"Takes the floor and is talked over before the first sentence lands."},
+      {id:3,start:1565.20,end:1575.92,speaker:"Friedberg",tag:"CIRCLING",text:"If there is a regulatory slowdown in the US and China races ahead, what are the implications for American business and consumers?",note:"Restates the same question instead of letting Sacks start."},
+      {id:4,start:1575.92,end:1579.04,speaker:"Sacks",tag:"CIRCLING",text:"They will— they will win.",note:"Starts the claim and is cut mid-sentence."},
+      {id:5,start:1576.00,end:1583.68,speaker:"Friedberg",tag:"OVERLAP",text:"How does this actually affect— what does that mean? What does that mean? Help people understand.",note:"Talks over Sacks and stacks the same undefined question."},
+      {id:6,start:1583.68,end:1590.00,speaker:"Sacks",tag:"CIRCLING",text:"Imagine if China had won the internet. Imagine if all the major internet companies were Chinese.",note:"Building a counterfactual; not yet a completed claim."},
+      {id:7,start:1590.00,end:1595.92,speaker:"Friedberg",tag:"OVERLAP",text:"I can't— I need you to imagine for me. Give me a scenario of what this means.",note:"Interrupts the counterfactual mid-setup."},
+      {id:8,start:1595.92,end:1620.00,speaker:"Sacks",tag:"CIRCLING",text:"Imagine Google, Microsoft, Meta were actually Baidu, Alibaba, Tencent. The economy would be less vibrant; the wealth would have gone to China.",note:"Still assembling the analogy."},
+      {id:9,start:1620.00,end:1641.44,speaker:"Sacks",tag:"POINT",text:"There are dual-use military applications — drones, weapons. America is not going to be the number one country economically and militarily if we lose AI. It's that simple.",summary:"Lose AI, lose US economic and military lead"},
+      {id:10,start:1641.44,end:1650.96,speaker:"Friedberg",tag:"CIRCLING",text:"Do you agree? What's your view for the US business, consumer, individual in a world where China has won AI?",note:"Still hunting for a definition of 'win' after the point landed."},
+      {id:11,start:1650.96,end:1654.24,speaker:"Chamath",tag:"OVERLAP",text:"I don't know. What do you mean by won? I don't know what it means.",note:"Piles onto Friedberg's undefined-win objection."},
+      {id:12,start:1654.24,end:1666.16,speaker:"Friedberg",tag:"CIRCLING",text:"If you could define that, it'd be easy. If we slow down AI, what are the tangible implications for people?",note:"Third pass at the same question."},
+      {id:13,start:1666.16,end:1695.00,speaker:"Chamath",tag:"CIRCLING",text:"Unless we actually go and ban open source — and I don't even know how you'd implement a ban — I think it's a worthless exercise. The consumer, American companies, and the economy will win.",note:"Starts an answer, then detours into mechanism."},
+      {id:14,start:1695.00,end:1756.88,speaker:"Chamath",tag:"CIRCLING",text:"Closed models score well on benchmarks, then decay in their own harness. Open-source models improve when wrapped. That data is going to be a tsunami.",note:"Explaining harnesses; the claim is not landed yet."},
+      {id:15,start:1756.88,end:1791.52,speaker:"Chamath",tag:"POINT",text:"Unless America stops consumers and businesses from using the cheapest, fastest, best thing, we will win. The debate is which private American company wins or loses.",summary:"No open-source ban, American consumer wins"},
+      {id:16,start:1791.52,end:1798.00,speaker:"Sacks",tag:"OVERLAP",text:"I got bad news for you, Chamath. An open source ban is coming. They're not going to call it that.",note:"Cuts in the instant Chamath lands the point."}
+    ];
+
+    const RANK = { OVERLAP: 3, POINT: 2, CIRCLING: 1 };
+    const $ = (id) => document.getElementById(id);
+    let player = null;
+    let lastId = null;
+    let lastT = STRETCH.start;
+
+    function fmt(sec) {
+      sec = Math.max(0, Math.floor(sec));
+      const m = Math.floor(sec / 60);
+      const s = String(sec % 60).padStart(2, "0");
+      return m + ":" + s;
+    }
+
+    function pick(t) {
+      const hits = CUES.filter((c) => t >= c.start && t < c.end);
+      if (!hits.length) return null;
+      hits.sort((a, b) => (RANK[b.tag] - RANK[a.tag]) || (b.start - a.start));
+      return hits[0];
+    }
+
+    function landedBefore(t) {
+      return CUES.filter((c) => c.tag === "POINT" && t >= c.start);
+    }
+
+    function setTag(label) {
+      $("taglabel").textContent = label;
+    }
+
+    function render(t) {
+      lastT = t;
+      const cue = pick(t);
+      const now = $("now");
+      const inStretch = t >= STRETCH.start && t < STRETCH.end;
+      const pct = Math.min(1, Math.max(0, (t - STRETCH.start) / (STRETCH.end - STRETCH.start)));
+      $("fill").style.width = (pct * 100) + "%";
+      $("clock").textContent = fmt(t) + " / 29:58";
+
+      if (!cue) {
+        lastId = null;
+        now.className = "now idle";
+        setTag(inStretch ? "Between turns" : "Outside stretch");
+        $("speaker").textContent = "—";
+        $("quote").textContent = inStretch
+          ? "No tagged utterance at this instant."
+          : "Jump to 25:58 to watch the tagged pile-on.";
+        $("summary").hidden = true;
+        $("note").hidden = true;
+      } else if (cue.id !== lastId) {
+        lastId = cue.id;
+        now.className = "now " + cue.tag;
+        setTag(cue.tag);
+        $("speaker").textContent = cue.speaker;
+        $("quote").textContent = cue.text;
+        if (cue.summary) {
+          $("summary").hidden = false;
+          $("summary").textContent = "Landed: " + cue.summary;
+        } else {
+          $("summary").hidden = true;
+        }
+        if (cue.note) {
+          $("note").hidden = false;
+          $("note").textContent = cue.note;
+        } else {
+          $("note").hidden = true;
+        }
+      }
+
+      const points = landedBefore(t);
+      const ol = $("landed");
+      if (!points.length) {
+        ol.innerHTML = '<li class="empty">None yet.</li>';
+      } else {
+        ol.innerHTML = points.map((p) =>
+          "<li>" + p.summary + "<span>" + p.speaker + " · " + fmt(p.start) + "</span></li>"
+        ).join("");
+      }
+    }
+
+    function currentTime() {
+      if (player && typeof player.getCurrentTime === "function") {
+        try { return player.getCurrentTime(); } catch (e) {}
+      }
+      return lastT;
+    }
+
+    function seekStretch() {
+      if (player && typeof player.seekTo === "function") {
+        player.seekTo(STRETCH.start, true);
+        if (typeof player.playVideo === "function") player.playVideo();
+      }
+      render(STRETCH.start);
+    }
+
+    $("jump").addEventListener("click", seekStretch);
+
+    function tick() { render(currentTime()); }
+
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player("player", {
+        videoId: "Sij_v-mcZXQ",
+        playerVars: {
+          start: STRETCH.start,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          origin: location.origin === "file://" ? undefined : location.origin
+        },
+        events: {
+          onReady: function () {
+            setInterval(tick, 200);
+            render(STRETCH.start);
+          },
+          onStateChange: function () { tick(); }
+        }
+      });
+    };
+
+    window.addEventListener("message", function (e) {
+      if (typeof e.data !== "string") return;
+      try {
+        const d = JSON.parse(e.data);
+        if (d.event === "infoDelivery" && d.info && typeof d.info.currentTime === "number") {
+          render(d.info.currentTime);
+        }
+      } catch (err) {}
+    });
+
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    render(STRETCH.start);
+  </script>
+</body>
+</html>
