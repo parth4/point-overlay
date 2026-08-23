@@ -6,7 +6,7 @@ Live: https://parth4.github.io/point-overlay/
 
 This first stop is a static page. Two stretches are tagged. You can paste other YouTube URLs; they are stored in the browser (last 10). They are not tagged yet. Tagging any URL needs a processing engine we have not built.
 
-Economist x Elon is first. All-In is next. Why this stretch hides behind a hover. Copy stays short and curious. Send a YouTube link is the CTA. We mark clips by hand; the page cannot tag a new URL itself.
+Economist x Elon is first. All-In is next. Why this stretch sits on the player bar as a hover. No lecture under the video. Try a few more, then send a link. We mark clips by hand.
 
 - `index.html` — player, overlay sidebar, explain, try a few more, paste CTA
 - `cues.json` — timed tags for the All-In China-win stretch

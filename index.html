@@ -436,8 +436,7 @@
     body.mode-landed .landed { display: block; }
     .whybox {
       position: relative;
-      display: inline-block;
-      margin: 0 0 28px;
+      flex-shrink: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
     .whybox button {
@@ -446,17 +445,17 @@
       padding: 0;
       color: var(--muted);
       cursor: pointer;
-      font: 13px/1.3 ui-sans-serif, system-ui, -apple-system, sans-serif;
-      letter-spacing: 0.02em;
+      font: 12px/1.2 ui-sans-serif, system-ui, -apple-system, sans-serif;
+      white-space: nowrap;
     }
     .whybox button:hover { color: var(--text); }
     .whytip {
       display: none;
       position: absolute;
-      left: 0;
-      top: calc(100% + 8px);
-      z-index: 4;
-      width: min(28rem, 86vw);
+      right: 0;
+      bottom: calc(100% + 10px);
+      z-index: 6;
+      width: min(26rem, 70vw);
       margin: 0;
       padding: 10px 12px;
       background: var(--panel);
@@ -475,11 +474,7 @@
       padding-top: 28px;
       border-top: 1px solid var(--line);
     }
-    .explain {
-      max-width: 34rem;
-      margin: 0 0 28px;
-    }
-    .explain h2, .next h2, .cta h2, .recent h2 {
+    .next h2, .cta h2, .recent h2 {
       margin: 0 0 10px;
       font-size: 12px;
       font-weight: 600;
@@ -488,20 +483,6 @@
       color: var(--dim);
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
-    .explain p {
-      margin: 0 0 8px;
-      color: var(--text);
-      font-size: 17px;
-      line-height: 1.4;
-    }
-    .explain p.more {
-      color: var(--muted);
-      font-size: 14px;
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    }
-    .explain .g { color: var(--point); }
-    .explain .a { color: var(--circle); }
-    .explain .r { color: var(--overlap); }
     .next {
       margin: 0 0 32px;
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -639,7 +620,7 @@
           <span class="bindi" aria-hidden="true"></span>
           <h1>The Point</h1>
         </div>
-        <p>When someone made the point. When they are still circling. When they talk over.</p>
+        <p>Color on the talk. Green when it lands. Amber while they are still going. Red when they talk over.</p>
       </div>
       <div class="headright">
         <div class="legend" aria-label="Tag legend">
@@ -665,6 +646,10 @@
             <button type="button" id="jump">Jump to stretch</button>
             <div class="bar" aria-hidden="true"><span id="fill"></span></div>
             <span id="clock">1:02:23 / 1:07:01</span>
+            <div class="whybox" id="whybox">
+              <button type="button" id="whybtn" aria-expanded="false">Why this stretch?</button>
+              <p class="whytip" id="why">This is where it gets hot. They talk over. A few points land.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -697,15 +682,6 @@
     </div>
 
     <div class="after">
-      <div class="whybox" id="whybox">
-        <button type="button" id="whybtn" aria-expanded="false">Why this stretch?</button>
-        <p class="whytip" id="why">This is where it gets hot. They talk over. A few points land.</p>
-      </div>
-      <section class="explain">
-        <h2>The Point</h2>
-        <p>Color on the talk. <span class="g">Green</span> when a point lands. <span class="a">Amber</span> while they are still going. <span class="r">Red</span> when they talk over.</p>
-        <p class="more">Click around. Then send one of yours.</p>
-      </section>
       <div class="next" id="nextwrap">
         <h2>Try a few more</h2>
         <div class="next-grid" id="trylist"></div>
