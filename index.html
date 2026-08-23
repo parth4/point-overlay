@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Point</title>
+  <title>The Point</title>
   <style>
     :root {
       --bg: #0c0e12;
@@ -30,9 +30,9 @@
     }
     body { min-height: 100vh; }
     .wrap {
-      max-width: 1180px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 28px 22px 48px;
+      padding: 20px 20px 56px;
     }
     header {
       display: flex;
@@ -123,11 +123,11 @@
     .pill.overlap i { background: var(--overlap); }
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+      grid-template-columns: minmax(0, 1fr) 360px;
       gap: 18px;
       align-items: start;
     }
-    @media (max-width: 880px) {
+    @media (max-width: 920px) {
       .layout { grid-template-columns: 1fr; }
       header { flex-direction: column; align-items: flex-start; }
       .headright { align-items: flex-start; }
@@ -282,12 +282,15 @@
     }
     .empty { color: var(--dim); font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 13px; }
     .feed {
-      max-height: 420px;
+      max-height: 220px;
       overflow: auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
+    body.mode-live .feed { opacity: 0.88; }
+    body.mode-landed .points { display: none; }
+    body.mode-landed .now { order: 2; opacity: 0.9; }
     .row, .pcard {
       text-align: left;
       width: 100%;
@@ -351,17 +354,7 @@
       order: 0;
     }
     .landed .list { display: flex; flex-direction: column; gap: 8px; }
-    body.mode-points .landed { display: block; }
-    body.mode-points .now { order: 2; opacity: 0.88; }
-    body.mode-points .points h2 { font-weight: 500; }
-    body.mode-points .feed { max-height: 280px; }
-    body.mode-points .feed .row.OVERLAP {
-      padding: 5px 10px;
-      opacity: 0.72;
-    }
-    body.mode-points .feed .row.OVERLAP .body { display: none; }
-    body.mode-points .feed .row.CIRCLING { opacity: 0.55; }
-    body.mode-points .feed .row.CIRCLING .body { font-size: 13px; }
+    body.mode-landed .landed { display: block; }
     .why {
       margin-top: 16px;
       color: var(--muted);
@@ -377,10 +370,72 @@
       line-height: 1.5;
     }
     .lede strong { color: var(--text); font-weight: 600; }
-    .try {
-      margin: 0 0 12px;
+    .next {
+      margin: 14px 0 0;
       font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
+    .next h2, .recent h2, .panel .sidetop h2 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    .next-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .next-card {
+      display: block;
+      width: 100%;
+      padding: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      color: inherit;
+      text-align: left;
+      font: inherit;
+    }
+    .next-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #111;
+    }
+    .next-card .next-meta {
+      display: block;
+      padding: 8px 9px 9px;
+    }
+    .next-card .next-meta b {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .next-card .next-meta i {
+      display: block;
+      margin-top: 3px;
+      font-style: normal;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .next-card:hover, .next-card.on { border-color: var(--accent); }
+    .sidetop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px 10px;
+      order: -1;
+    }
+    .panel .modes { flex-shrink: 0; }
     .try ul, .recent ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
     .try button, .recent button {
       background: var(--panel);
@@ -444,21 +499,17 @@
     .built:hover { color: var(--muted); }
   </style>
 </head>
-<body class="mode-watch">
+<body class="mode-live">
   <div class="wrap">
     <header>
       <div>
         <div class="brand">
           <span class="bindi" aria-hidden="true"></span>
-          <h1>Point</h1>
+          <h1>The Point</h1>
         </div>
         <p>When someone made the point. When they are still circling. When they talk over.</p>
       </div>
       <div class="headright">
-        <div class="modes" role="tablist" aria-label="Audience mode">
-          <button type="button" id="mode-watch" class="on">Watch</button>
-          <button type="button" id="mode-points">Points</button>
-        </div>
         <div class="legend" aria-label="Tag legend">
           <span class="pill point"><i></i> Point</span>
           <span class="pill circling"><i></i> Circling</span>
@@ -467,11 +518,7 @@
       </div>
     </header>
 
-    <p class="lede">Green is a landed point. Amber is still circling. Red is overlap. Pick a tagged clip. <strong>Watch</strong> follows the talk. <strong>Points</strong> is the argument if you already saw it.</p>
-    <div class="try" id="trywrap">
-      <h2>Try these</h2>
-      <ul id="trylist"></ul>
-    </div>
+    <p class="lede">Green is a landed point. Amber is still circling. Red is overlap. <strong>Live</strong> follows the talk. <strong>Landed</strong> is the argument after it is processed.</p>
     <form class="urlbar" id="urlform">
       <input id="url" type="url" placeholder="Paste a YouTube URL" autocomplete="off" />
       <button type="submit">Open</button>
@@ -493,6 +540,10 @@
             <span id="clock">25:58 / 29:58</span>
           </div>
         </div>
+        <div class="next" id="nextwrap">
+          <h2>Try this next</h2>
+          <div class="next-grid" id="trylist"></div>
+        </div>
         <p class="why" id="why">
           <strong>Why this stretch.</strong>
           Friedberg keeps restating “what does China winning actually mean?” while Sacks tries to answer and Chamath piles onto the definition fight. Highest interrupt density in the episode — not the wordiest passage.
@@ -500,6 +551,12 @@
       </div>
 
       <aside class="panel">
+        <div class="sidetop">
+          <div class="modes" role="tablist" aria-label="Overlay mode">
+            <button type="button" id="mode-live" class="on">Live</button>
+            <button type="button" id="mode-landed">Landed</button>
+          </div>
+        </div>
         <div class="landed" id="landed">
           <h2>Landed points</h2>
           <div class="list" id="landedlist"></div>
@@ -514,8 +571,8 @@
           <p class="note" id="note" hidden></p>
         </div>
         <div class="points">
-          <h2 id="feedtitle">Running comments</h2>
-          <div class="feed" id="feed"><p class="empty">Play. Lines collect here. Scroll the whole stretch after.</p></div>
+          <h2 id="feedtitle">As it plays</h2>
+          <div class="feed" id="feed"><p class="empty">Play. Lines collect here as the stretch runs.</p></div>
         </div>
       </aside>
     </div>
@@ -533,7 +590,7 @@
     let CUES = DEMOS[0].cues;
     let STRETCH = DEMOS[0].stretch;
     let tagged = true;
-    let mode = "watch";
+    let mode = "live";
     let player = null;
     let lastId = null;
     let lastT = STRETCH.start;
@@ -568,8 +625,8 @@
     function setMode(next) {
       mode = next;
       document.body.className = "mode-" + next;
-      $("mode-watch").className = next === "watch" ? "on" : "";
-      $("mode-points").className = next === "points" ? "on" : "";
+      $("mode-live").className = next === "live" ? "on" : "";
+      $("mode-landed").className = next === "landed" ? "on" : "";
       renderLanded();
       render(lastT);
     }
@@ -605,7 +662,10 @@
     function renderTry() {
       $("trylist").innerHTML = DEMOS.map((d) => {
         const on = d.id === currentDemoId && tagged ? " on" : "";
-        return '<li><button type="button" class="' + on.trim() + '" data-demo="' + d.id + '">' + esc(d.label) + "</button></li>";
+        return '<button type="button" class="next-card' + on + '" data-demo="' + d.id + '">' +
+          '<img src="https://i.ytimg.com/vi/' + d.videoId + '/mqdefault.jpg" alt="">' +
+          '<span class="next-meta"><b>' + esc(d.label) + "</b><i>" + esc(d.stretch.label) + "</i></span>" +
+          "</button>";
       }).join("");
     }
 
@@ -661,12 +721,12 @@
         }
       }
 
-      const seen = !tagged ? [] : (mode === "points" ? CUES : seenBefore(t));
+      const seen = !tagged ? [] : (mode === "landed" ? CUES : seenBefore(t));
       const feed = $("feed");
       const liveId = cue ? cue.id : null;
       if (!seen.length) {
         feed.innerHTML = tagged
-          ? '<p class="empty">Play. Lines collect here. Scroll the whole stretch after.</p>'
+          ? '<p class="empty">Play. Lines collect here as the stretch runs.</p>'
           : '<p class="empty">No tags for this URL.</p>';
       } else {
         feed.innerHTML = seen.map((c) => {
@@ -678,8 +738,8 @@
             '<div class="body">' + esc(c.tag === "POINT" ? c.text : line) + "</div>" + land +
             "</button>";
         }).join("");
-        const liveEl = feed.querySelector(".row.live") || (mode === "watch" ? feed.lastElementChild : feed.querySelector(".row.live"));
-        if (liveEl && mode === "watch") liveEl.scrollIntoView({ block: "nearest" });
+        const liveEl = feed.querySelector(".row.live") || (mode === "live" ? feed.lastElementChild : feed.querySelector(".row.live"));
+        if (liveEl && mode === "live") liveEl.scrollIntoView({ block: "nearest" });
       }
     }
 
@@ -714,8 +774,8 @@
       if (!row) return;
       seekTo(parseFloat(row.getAttribute("data-start")));
     });
-    $("mode-watch").addEventListener("click", function () { setMode("watch"); });
-    $("mode-points").addEventListener("click", function () { setMode("points"); });
+    $("mode-live").addEventListener("click", function () { setMode("live"); });
+    $("mode-landed").addEventListener("click", function () { setMode("landed"); });
 
     function videoIdFromUrl(raw) {
       try {
@@ -792,9 +852,9 @@
       tagged = false;
       lastId = null;
       lastT = 0;
-      $("why").innerHTML = "<strong>Why this stretch.</strong> This URL is not tagged. Pick a clip above, or keep it in your last 10.";
+      $("why").innerHTML = "<strong>Why this stretch.</strong> This URL is not tagged. Pick a clip below, or keep it in your last 10.";
       $("jump").hidden = true;
-      setStatus("Saved. This video is not tagged yet. Only the Try these clips have Point / Circling / Overlap.", true);
+      setStatus("Saved. This video is not tagged yet. Only the clips under Try this next have Point / Circling / Overlap.", true);
       $("url").value = url || "";
       $("landedlist").innerHTML = '<p class="empty">No landed points on this clip.</p>';
       renderTry();
