@@ -846,7 +846,7 @@
     let player = null;
     let lastId = null;
     let lastT = STRETCH.start;
-    let medHold = { text: "", from: 0, hold: 0, fade: 0 };
+    let medHold = { text: "", from: 0, hold: 0, fade: 0, kind: "" };
 
     function demoById(id) { return DEMOS.find((d) => d.id === id) || null; }
     function demoByVideoId(id) { return DEMOS.find((d) => d.videoId === id) || null; }
@@ -915,6 +915,21 @@
       return c.move || (c.tag === "POINT" ? "press" : (c.tag === "OVERLAP" ? "cut" : "follow"));
     }
 
+    function landAt(c) {
+      if (cueMove(c) !== "hit") return c.start;
+      const dur = Math.max(0.4, c.end - c.start);
+      if (dur < 2.2) return c.start + dur * 0.6;
+      const tail = Math.min(2.2, Math.max(1.2, dur * 0.12));
+      return c.end - tail;
+    }
+
+    function liveMove(c, t) {
+      const m = cueMove(c);
+      if (m !== "hit") return m;
+      if (t >= landAt(c)) return "hit";
+      return c.tag === "POINT" ? "press" : "follow";
+    }
+
     function zonesAt(t) {
       const z = {};
       const prev = {};
@@ -922,7 +937,7 @@
       CUES.forEach((c) => {
         if (t < c.start) return;
         lastCue = c;
-        const move = cueMove(c);
+        const move = liveMove(c, t);
         if (c.tag === "OVERLAP") {
           Object.keys(z).forEach((name) => {
             if (name === c.speaker) return;
@@ -938,7 +953,7 @@
         }
       });
       if (lastCue && lastCue.tag !== "OVERLAP") {
-        const m = cueMove(lastCue);
+        const m = liveMove(lastCue, t);
         const charge = lastCue.tag === "POINT" || m === "hit" || m === "press" || m === "pin";
         if (charge) {
           speakersIn().forEach((name) => {
@@ -983,12 +998,14 @@
         return;
       }
       const names = { POINT: "Point", CIRCLING: "Circling", OVERLAP: "Overlap" };
-      const feel = feelOf(cue.move || "") || { emoji: "", word: "" };
+      const move = liveMove(cue, lastT);
+      const feel = feelOf(move);
+      const landed = move === "hit";
       cap.hidden = false;
       cap.className = "vidcap " + cue.tag;
       $("vidcap-face").textContent = feel.emoji || "";
       $("vidcap-label").textContent = (feel.word || names[cue.tag] || cue.tag);
-      $("vidcap-text").textContent = cue.summary || (cue.speaker + " · " + cue.text);
+      $("vidcap-text").textContent = (landed && cue.summary) ? cue.summary : (cue.speaker + " · " + cue.text);
       edge.className = "videdge on " + cue.tag;
       paintMediator(cue);
     }
@@ -997,12 +1014,27 @@
     function paintMediator(cue) {
       const med = $("mediator");
       const t = lastT;
-      const move = cue && cue.move;
-      const loud = !!(cue && cue.mediator && MED_LOUD[move]);
+      if (!cue) {
+        med.hidden = true;
+        med.classList.remove("quiet");
+        return;
+      }
+      const raw = cueMove(cue);
+      const move = liveMove(cue, t);
+      const building = raw === "hit" && move !== "hit";
+      const prevHit = medHold.kind === "hit" && t <= medHold.hold + 4;
+      if (building && !prevHit) {
+        med.hidden = false;
+        med.classList.remove("quiet");
+        $("medline").textContent = "Still on this.";
+        return;
+      }
+      const line = (!building && cue.mediator) ? cue.mediator : "";
+      const loud = !!(line && MED_LOUD[move]);
       const holdFor = loud ? MED_LOUD[move] : 0;
-      const isNew = loud && cue.mediator !== medHold.text;
+      const isNew = loud && line !== medHold.text;
       if (isNew && (move === "hit" || t >= medHold.hold || !medHold.text)) {
-        medHold = { text: cue.mediator, from: t, hold: t + holdFor, fade: t + Math.max(2.5, holdFor - 3) };
+        medHold = { text: line, from: t, hold: t + holdFor, fade: t + Math.max(2.5, holdFor - 3), kind: move };
       }
       if (!medHold.text || t < medHold.from - 1) {
         med.hidden = true;
@@ -1012,7 +1044,7 @@
       if (t > medHold.hold + 4) {
         med.hidden = true;
         med.classList.remove("quiet");
-        medHold = { text: "", from: 0, hold: 0, fade: 0 };
+        medHold = { text: "", from: 0, hold: 0, fade: 0, kind: "" };
         return;
       }
       med.hidden = false;
@@ -1274,7 +1306,7 @@
       tagged = true;
       lastId = null;
       lastT = demo.stretch.start;
-      medHold = { text: "", from: 0, hold: 0, fade: 0 };
+      medHold = { text: "", from: 0, hold: 0, fade: 0, kind: "" };
       $("why").textContent = demo.why;
       $("jump").hidden = false;
       setStatus("This one is marked. Send another if you want more.");
@@ -1303,7 +1335,7 @@
       tagged = false;
       lastId = null;
       lastT = 0;
-      medHold = { text: "", from: 0, hold: 0, fade: 0 };
+      medHold = { text: "", from: 0, hold: 0, fade: 0, kind: "" };
       $("why").textContent = "Not marked yet. Send the link. We mark Point, Circling, Overlap by hand.";
       $("jump").hidden = true;
       setStatus("Got the link. It is not marked yet. Send it to us and we will mark it by hand.", true);
