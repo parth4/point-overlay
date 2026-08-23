@@ -145,6 +145,23 @@
       background: #000;
     }
     #player { width: 100%; height: 100%; }
+    .player-wrap:fullscreen,
+    .player-wrap:-webkit-full-screen {
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+      background: #000;
+    }
+    .player-wrap:fullscreen .vidstack,
+    .player-wrap:-webkit-full-screen .vidstack {
+      bottom: 80px;
+      left: 28px;
+      right: 28px;
+    }
+    .player-wrap:fullscreen .cast-chip.left,
+    .player-wrap:-webkit-full-screen .cast-chip.left { left: 28px; }
+    .player-wrap:fullscreen .cast-chip.right,
+    .player-wrap:-webkit-full-screen .cast-chip.right { right: 28px; }
     .cast {
       position: absolute;
       inset: 0;
@@ -738,6 +755,7 @@
             <button type="button" id="jump">Jump to stretch</button>
             <div class="bar" aria-hidden="true"><span id="fill"></span></div>
             <span id="clock">1:02:23 / 1:07:01</span>
+            <button type="button" id="fsbtn">Full screen</button>
             <div class="whybox" id="whybox">
               <button type="button" id="whybtn" aria-expanded="false">Why this stretch?</button>
               <p class="whytip" id="why">This is where it gets hot. They talk over. A few points land.</p>
@@ -1111,6 +1129,53 @@
     }
 
     $("jump").addEventListener("click", seekStretch);
+
+    function fsEl() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+    function reqFs(el) {
+      const fn = el.requestFullscreen || el.webkitRequestFullscreen;
+      return fn ? fn.call(el) : Promise.reject();
+    }
+    function exitFs() {
+      const fn = document.exitFullscreen || document.webkitExitFullscreen;
+      return fn ? fn.call(document) : Promise.resolve();
+    }
+    function wrapFs() {
+      return fsEl() === document.querySelector(".player-wrap");
+    }
+    function setFsLabel() {
+      const btn = $("fsbtn");
+      if (btn) btn.textContent = wrapFs() ? "Exit" : "Full screen";
+    }
+    function toggleWrapFs() {
+      const wrap = document.querySelector(".player-wrap");
+      if (!wrap) return;
+      if (wrapFs()) exitFs();
+      else reqFs(wrap).catch(function () {});
+    }
+    function stealIframeFs() {
+      const wrap = document.querySelector(".player-wrap");
+      const iframe = wrap && wrap.querySelector("iframe");
+      const el = fsEl();
+      if (!el || !wrap || !iframe) { setFsLabel(); return; }
+      if (el === iframe) {
+        Promise.resolve(exitFs()).then(function () { return reqFs(wrap); }).catch(function () {});
+        return;
+      }
+      setFsLabel();
+    }
+    $("fsbtn").addEventListener("click", toggleWrapFs);
+    document.addEventListener("fullscreenchange", stealIframeFs);
+    document.addEventListener("webkitfullscreenchange", stealIframeFs);
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "f" && e.key !== "F") return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      e.preventDefault();
+      toggleWrapFs();
+    });
     $("feed").addEventListener("click", function (e) {
       const row = e.target.closest("button[data-start]");
       if (!row) return;
@@ -1278,6 +1343,7 @@
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
+          fs: 0,
           origin: location.origin === "file://" ? undefined : location.origin
         },
         events: {
