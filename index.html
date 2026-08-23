@@ -208,16 +208,22 @@
     .videdge.POINT { background: var(--point); box-shadow: 0 0 18px rgba(61, 154, 106, 0.55); }
     .videdge.CIRCLING { background: var(--circle); }
     .videdge.OVERLAP { background: var(--overlap); }
-    .vidcap {
+    .vidstack {
       position: absolute;
       left: 14px;
       right: 14px;
       bottom: 14px;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       pointer-events: none;
+    }
+    .vidcap {
+      position: static;
       display: flex;
       align-items: center;
       gap: 10px;
-      max-width: calc(100% - 28px);
       padding: 8px 10px;
       border-radius: 8px;
       background: rgba(8, 10, 14, 0.72);
@@ -275,12 +281,7 @@
     }
     .vidcap.POINT .vidcap-text { font-size: 15px; font-weight: 600; }
     .mediator {
-      position: absolute;
-      left: 14px;
-      right: 14px;
-      bottom: 62px;
-      z-index: 4;
-      pointer-events: none;
+      position: static;
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -719,13 +720,15 @@
             <div id="player"></div>
             <div class="videdge" id="videdge" aria-hidden="true"></div>
             <div class="cast" id="cast" hidden></div>
-            <div class="mediator" id="mediator" hidden>
-              <span class="mediator-who">Mediator</span>
-              <span class="mediator-line" id="medline"></span>
-            </div>
-            <div class="vidcap" id="vidcap" hidden>
-              <span class="vidcap-tag" id="vidcap-tag"><i></i><span id="vidcap-face"></span><span id="vidcap-label">Point</span></span>
-              <span class="vidcap-text" id="vidcap-text"></span>
+            <div class="vidstack">
+              <div class="vidcap" id="vidcap" hidden>
+                <span class="vidcap-tag" id="vidcap-tag"><i></i><span id="vidcap-face"></span><span id="vidcap-label">Point</span></span>
+                <span class="vidcap-text" id="vidcap-text"></span>
+              </div>
+              <div class="mediator" id="mediator" hidden>
+                <span class="mediator-who">Mediator</span>
+                <span class="mediator-line" id="medline"></span>
+              </div>
             </div>
           </div>
           <div class="hud">
