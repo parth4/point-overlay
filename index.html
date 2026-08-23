@@ -252,6 +252,54 @@
       margin-top: 2px;
     }
     .empty { color: var(--dim); font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 13px; }
+    .feed {
+      max-height: 420px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .row {
+      text-align: left;
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      color: inherit;
+      font: inherit;
+    }
+    .row:hover { border-color: var(--accent); }
+    .row.live { box-shadow: inset 3px 0 0 var(--accent); }
+    .row.POINT {
+      background: var(--point-bg);
+      border-color: rgba(61, 154, 106, 0.35);
+      padding: 11px 12px;
+    }
+    .row.CIRCLING { opacity: 0.92; }
+    .row.OVERLAP { background: var(--overlap-bg); }
+    .row .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .row.POINT .meta { color: var(--point); }
+    .row.OVERLAP .meta { color: var(--overlap); }
+    .row .body { font-size: 14px; line-height: 1.35; }
+    .row.POINT .body { font-size: 15px; }
+    .row .land {
+      margin-top: 6px;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      color: var(--point);
+    }
     .why {
       margin-top: 16px;
       color: var(--muted);
@@ -394,8 +442,8 @@
           <p class="note" id="note" hidden></p>
         </div>
         <div class="points">
-          <h2>Points landed in this stretch</h2>
-          <ol id="landed"><li class="empty">None yet.</li></ol>
+          <h2>Running comments</h2>
+          <div class="feed" id="feed"><p class="empty">Play. Lines collect here. Scroll the whole stretch after.</p></div>
         </div>
       </aside>
     </div>
@@ -445,8 +493,8 @@
       return hits[0];
     }
 
-    function landedBefore(t) {
-      return CUES.filter((c) => c.tag === "POINT" && t >= c.start);
+    function seenBefore(t) {
+      return CUES.filter((c) => t >= c.start);
     }
 
     function setTag(label) {
@@ -492,14 +540,23 @@
         }
       }
 
-      const points = landedBefore(t);
-      const ol = $("landed");
-      if (!points.length) {
-        ol.innerHTML = '<li class="empty">None yet.</li>';
+      const seen = seenBefore(t);
+      const feed = $("feed");
+      const liveId = cue ? cue.id : null;
+      if (!seen.length) {
+        feed.innerHTML = '<p class="empty">Play. Lines collect here. Scroll the whole stretch after.</p>';
       } else {
-        ol.innerHTML = points.map((p) =>
-          "<li>" + p.summary + "<span>" + p.speaker + " · " + fmt(p.start) + "</span></li>"
-        ).join("");
+        feed.innerHTML = seen.map((c) => {
+          const live = c.id === liveId ? " live" : "";
+          const line = c.summary || c.text;
+          const land = c.summary ? '<div class="land">Point: ' + c.summary + "</div>" : "";
+          return '<button type="button" class="row ' + c.tag + live + '" data-start="' + c.start + '">' +
+            '<div class="meta"><span>' + c.tag + " · " + c.speaker + "</span><span>" + fmt(c.start) + "</span></div>" +
+            '<div class="body">' + (c.tag === "POINT" ? c.text : line) + "</div>" + land +
+            "</button>";
+        }).join("");
+        const liveEl = feed.querySelector(".row.live") || feed.lastElementChild;
+        if (liveEl) liveEl.scrollIntoView({ block: "nearest" });
       }
     }
 
@@ -519,6 +576,16 @@
     }
 
     $("jump").addEventListener("click", seekStretch);
+    $("feed").addEventListener("click", function (e) {
+      const row = e.target.closest("button[data-start]");
+      if (!row || !player) return;
+      const t = parseFloat(row.getAttribute("data-start"));
+      if (typeof player.seekTo === "function") {
+        player.seekTo(t, true);
+        if (typeof player.playVideo === "function") player.playVideo();
+      }
+      render(t);
+    });
 
     function videoIdFromUrl(raw) {
       try {
@@ -580,7 +647,7 @@
         $("quote").textContent = "Paste does not process a new video yet. This one is in your last 10.";
         $("summary").hidden = true;
         $("note").hidden = true;
-        $("landed").innerHTML = '<li class="empty">No tags for this URL.</li>';
+        $("feed").innerHTML = '<p class="empty">No tags for this URL.</p>';
       }
       $("url").value = url || "";
       renderRecent(loadRecent());
