@@ -145,6 +145,36 @@
       background: #000;
     }
     #player { width: 100%; height: 100%; }
+    .cast {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      right: 12px;
+      z-index: 3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .cast[hidden] { display: none; }
+    .cast-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(8, 10, 14, 0.62);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font: 12px/1.2 ui-sans-serif, system-ui, -apple-system, sans-serif;
+      opacity: 0.72;
+    }
+    .cast-chip.on { opacity: 1; }
+    .cast-chip.POINT { border-color: rgba(61, 154, 106, 0.45); }
+    .cast-chip.CIRCLING { border-color: rgba(201, 162, 39, 0.4); }
+    .cast-chip.OVERLAP { border-color: rgba(196, 92, 92, 0.45); }
+    .cast-chip.HELD { border-color: rgba(196, 92, 92, 0.28); opacity: 0.92; }
+    .cast-chip .e { font-size: 14px; line-height: 1; }
     .videdge {
       position: absolute;
       left: 0;
@@ -637,8 +667,9 @@
           <div class="player-wrap">
             <div id="player"></div>
             <div class="videdge" id="videdge" aria-hidden="true"></div>
+            <div class="cast" id="cast" hidden></div>
             <div class="vidcap" id="vidcap" hidden>
-              <span class="vidcap-tag" id="vidcap-tag"><i></i><span id="vidcap-label">Point</span></span>
+              <span class="vidcap-tag" id="vidcap-tag"><i></i><span id="vidcap-face"></span><span id="vidcap-label">Point</span></span>
               <span class="vidcap-text" id="vidcap-text"></span>
             </div>
           </div>
@@ -745,9 +776,62 @@
       $("taglabel").textContent = label;
     }
 
+    const FACE = {
+      POINT: { emoji: "💥", word: "landed" },
+      CIRCLING: { emoji: "🤔", word: "still going" },
+      OVERLAP: { emoji: "🗣️", word: "cuts in" },
+      HELD: { emoji: "🫢", word: "held" }
+    };
+
+    function speakersIn() {
+      const seen = [];
+      CUES.forEach((c) => { if (seen.indexOf(c.speaker) === -1) seen.push(c.speaker); });
+      return seen;
+    }
+
+    function lastCueFor(speaker, t) {
+      let last = null;
+      CUES.forEach((c) => {
+        if (c.speaker === speaker && t >= c.start) last = c;
+      });
+      return last;
+    }
+
+    function feelFor(speaker, cue, t) {
+      if (cue && cue.tag === "OVERLAP") {
+        if (cue.speaker === speaker) return FACE.OVERLAP;
+        if (lastCueFor(speaker, t)) return FACE.HELD;
+      }
+      const last = lastCueFor(speaker, t);
+      if (!last) return { emoji: "😶", word: "" };
+      return FACE[last.tag] || { emoji: "😶", word: "" };
+    }
+
+    function paintCast(cue) {
+      const box = $("cast");
+      if (!tagged || !CUES.length) {
+        box.hidden = true;
+        box.innerHTML = "";
+        return;
+      }
+      const t = lastT;
+      const names = speakersIn();
+      box.hidden = false;
+      box.innerHTML = names.map((name) => {
+        const feel = feelFor(name, cue, t);
+        const on = cue && cue.speaker === name ? " on" : "";
+        const tag = (cue && cue.tag === "OVERLAP" && name !== cue.speaker && lastCueFor(name, t))
+          ? "HELD"
+          : (lastCueFor(name, t) ? lastCueFor(name, t).tag : "");
+        const klass = "cast-chip " + tag + on;
+        return '<span class="' + klass + '"><span class="e">' + feel.emoji + "</span>" + esc(name) + "</span>";
+      }).join("");
+    }
+
     function paintCap(cue) {
       const cap = $("vidcap");
       const edge = $("videdge");
+      paintCast(cue);
       if (!cue) {
         cap.hidden = true;
         cap.className = "vidcap";
@@ -755,9 +839,11 @@
         return;
       }
       const names = { POINT: "Point", CIRCLING: "Circling", OVERLAP: "Overlap" };
+      const feel = FACE[cue.tag] || { emoji: "", word: "" };
       cap.hidden = false;
       cap.className = "vidcap " + cue.tag;
-      $("vidcap-label").textContent = names[cue.tag] || cue.tag;
+      $("vidcap-face").textContent = feel.emoji;
+      $("vidcap-label").textContent = (feel.word || names[cue.tag] || cue.tag);
       $("vidcap-text").textContent = cue.summary || (cue.speaker + " · " + cue.text);
       edge.className = "videdge on " + cue.tag;
     }
